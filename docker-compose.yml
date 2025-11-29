@@ -3,13 +3,14 @@ services:
   # XSS Hunter Express service
   xsshunterexpress:
     build: .
+    restart: unless-stopped
     environment:
       # [REQUIRED] The hostname/domain pointed to 
       # the IP of the server running this service. 
       # SSL will automatically be set up and
       #  renewed with LetsEncrypt.
       - HOSTNAME=${HOSTNAME:-your.host.name}
-      - SSL_ENABLED=${SSL_ENABLED:-true}
+      - SSL_ENABLED=${SSL_ENABLED:-false}
       # [REQUIRED if SSL_ENABLED] Email for SSL
       - SSL_CONTACT_EMAIL=${SSL_CONTACT_EMAIL:-YourEmail@gmail.com}
       # Maximum XSS callback payload size
@@ -42,8 +43,8 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-xsshunterexpress}
       - DATABASE_HOST=${DATABASE_HOST:-postgresdb}
       - NODE_ENV=${NODE_ENV:-production}
-    # ports:
-    #   - "80:80"
+    ports:
+       - "38080:80"
     #  - "443:443"
     volumes:
       # Stores the SSL/TLS certificates and keys
@@ -66,7 +67,7 @@ services:
   # externally. If you do, be sure to change the password.
   postgresdb:
     image: postgres
-    restart: always
+    restart: unless-stopped
     environment:
       # This is a volume mounted into the container
       # (see the directory ./postgres-db-data)
